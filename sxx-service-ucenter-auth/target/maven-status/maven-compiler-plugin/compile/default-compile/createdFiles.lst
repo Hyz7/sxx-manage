@@ -1,0 +1,9 @@
+com\sxx\auth\service\UserJwt.class
+com\sxx\auth\controller\AuthController.class
+com\sxx\auth\config\AuthorizationServerConfig.class
+com\sxx\auth\service\AuthService$1.class
+com\sxx\auth\service\AuthService.class
+com\sxx\auth\UcenterAuthApplication.class
+com\sxx\auth\service\UserDetailsServiceImpl.class
+com\sxx\auth\config\CustomUserAuthenticationConverter.class
+com\sxx\auth\config\WebSecurityConfig.class

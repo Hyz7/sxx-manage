@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sxx.manage.mapper.DynamicMapper">
+    <update id="update" parameterType="com.sxx.framework.domain.dynamic.Dynamic" >
+        UPDATE t_dynamic
+        <trim prefix="set" suffixOverrides=",">
+            <if test="typeId!=null">typeId=#{typeId},</if>
+            <if test="title!=null">title=#{title},</if>
+            <if test="content!=null">content=#{content},</if>
+            <if test="createTime!=null">createTime=#{createTime},</if>
+            <if test="typeName!=null">typeName=#{typeName},</if>
+            <if test="image!=null">image=#{image},</if>
+        </trim>
+        WHERE id=#{id}
+    </update>
+
+    <insert id="save" parameterType="com.sxx.framework.domain.dynamic.Dynamic">
+        alter table t_dynamic AUTO_INCREMENT=1;
+        insert into t_dynamic values(null,#{typeId},#{title},#{content},#{createTime},#{image});
+    </insert>
+
+    <select id="findNewsList" resultType="com.sxx.framework.domain.dynamic.Dynamic">
+        SELECT
+            t.typeName,
+            t.typeId,
+            d.id,
+            d.title,
+            d.content,
+            d.createTime,
+            d.image
+        FROM
+            t_type t,
+            t_dynamic d
+        WHERE
+            t.typeId = d.typeId
+        AND d.typeId = #{typeId}
+        <if test="name != null and name != '' and name != 'undefined'">
+            AND d.title LIKE CONCAT(CONCAT('%',#{name},'%'))
+        </if>
+        ORDER BY
+	  d.createTime DESC
+    </select>
+
+    <select id="findDynamicListByTypeId" resultType="com.sxx.framework.domain.dynamic.Dynamic">
+    SELECT
+	d.*, t.typeName
+    FROM
+	t_dynamic d,
+	t_type t
+    WHERE
+	d.typeId = t.typeId
+    AND t.typeId = #{typeId}
+    <if test="name != null and name != '' and name != 'undefined'">
+        AND d.title LIKE CONCAT(CONCAT('%',#{name},'%'))
+    </if>
+    ORDER BY
+	createTime DESC
+    </select>
+</mapper>

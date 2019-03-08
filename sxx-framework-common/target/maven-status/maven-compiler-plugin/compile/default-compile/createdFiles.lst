@@ -1,0 +1,6 @@
+com\sxx\framework\model\aws\AwsS3Bucket.class
+com\sxx\framework\model\response\Response.class
+com\sxx\framework\model\request\RequestData.class
+com\sxx\framework\model\response\ResponseResult.class
+com\sxx\framework\model\response\ResultCode.class
+com\sxx\framework\model\response\CommonCode.class

@@ -1,0 +1,8 @@
+com\sxx\manage\mapper\DataDownloadMapper.class
+com\sxx\manage\controller\DynamicController.class
+com\sxx\manage\controller\DataDownloadController.class
+com\sxx\manage\service\DynamicService.class
+com\sxx\manage\config\DataEntityHttpMessageConverter.class
+com\sxx\manage\mapper\DynamicMapper.class
+com\sxx\manage\service\DataDownloadService.class
+com\sxx\manage\ManageApplication.class

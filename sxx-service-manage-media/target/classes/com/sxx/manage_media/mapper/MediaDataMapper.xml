@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sxx.manage_media.mapper.MediaDataMapper">
+    <insert id="saveMediaData" parameterType="com.sxx.framework.domain.media.MediaData">
+        <selectKey keyProperty="fileId" order="BEFORE" resultType="java.lang.String">
+            select replace(uuid(),'-','') from dual
+        </selectKey>
+        insert into media_data values(#{fileId},#{fileName},#{fileOriginalName},#{fileSize},#{fileUrl},#{fileType},#{uploadTime},#{processStatus},#{tag});
+    </insert>
+</mapper>

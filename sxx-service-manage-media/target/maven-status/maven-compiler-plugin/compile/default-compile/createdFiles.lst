@@ -1,0 +1,10 @@
+com\sxx\manage_media\mapper\CourseRepository.class
+com\sxx\manage_media\config\MediaDataHttpMessageConverter.class
+com\sxx\manage_media\controller\MediaUploadController.class
+com\sxx\manage_media\mapper\TeachplanRepository.class
+com\sxx\manage_media\mapper\MediaDataMapper.class
+com\sxx\manage_media\mapper\CourseManageMapper.class
+com\sxx\manage_media\ManageMediaApplication.class
+com\sxx\manage_media\service\MediaUploadService.class
+com\sxx\manage_media\controller\CourseManageController.class
+com\sxx\manage_media\service\CourseManageService.class

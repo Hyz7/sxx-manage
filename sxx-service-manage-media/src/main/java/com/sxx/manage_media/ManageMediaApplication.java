@@ -1,14 +1,14 @@
 package com.sxx.manage_media;
 
-import com.sxx.manage_media.config.MediaDataHttpMessageConverter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 /**
  * @author Administrator
@@ -26,13 +26,24 @@ public class ManageMediaApplication {
         SpringApplication.run(ManageMediaApplication.class,args);
     }
 
-    @Bean
-    public RestTemplate restTemplate(){
-        return new RestTemplate(new OkHttp3ClientHttpRequestFactory());
+    private CorsConfiguration buildConfig() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.addAllowedOrigin("*");
+        corsConfiguration.addAllowedHeader("*");
+        corsConfiguration.addAllowedMethod("*");
+        corsConfiguration.addExposedHeader("Access-Control-Allow-Origin");
+        return corsConfiguration;
     }
 
+    /**
+     * 跨域过滤器
+     *
+     * @return
+     */
     @Bean
-    public MediaDataHttpMessageConverter dataEntityHttpMessageConverter(){
-        return new MediaDataHttpMessageConverter();
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", buildConfig());
+        return new CorsFilter(source);
     }
 }

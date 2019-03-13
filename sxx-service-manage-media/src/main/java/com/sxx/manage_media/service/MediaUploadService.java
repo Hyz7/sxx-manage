@@ -8,6 +8,8 @@ import com.sxx.framework.model.aws.AwsS3Bucket;
 import com.sxx.framework.model.response.CommonCode;
 import com.sxx.framework.model.response.ResponseResult;
 import com.sxx.manage_media.mapper.MediaDataMapper;
+import com.sxx.utils.AWSS3Util;
+import com.sxx.utils.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -70,8 +72,8 @@ public class MediaUploadService {
             // 设置文件eTag
             mediaData.setTag(putObjectResult.getETag());
             // 设置文件URL
-            String fileUrl = "https://s3.cn-northwest-1.amazonaws.com.cn/sxx-media/" + fileName;
-            mediaData.setFileUrl(fileUrl);
+            String filePublicUrl = FileUtil.getFilePublicUrl(AwsS3Bucket.SXX_Media_BUCKET, fileName);
+            mediaData.setFileUrl(filePublicUrl);
             // 成功
             mediaData.setProcessStatus("1");
             mediaDataMapper.saveMediaData(mediaData);

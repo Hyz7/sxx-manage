@@ -54,9 +54,10 @@
         <selectKey keyProperty="courseId" order="BEFORE" resultType="java.lang.String">
             select replace(uuid(),'-','') from dual
         </selectKey>
-        insert into course values (#{courseId},#{courseTitle},#{courseSubTitle},#{courseImage},#{courseTeacher}
-        ,#{courseTeacherImage},#{courseTeacherIntroduce},#{courseWatchCount},#{coursePreferentialTime},#{courseActivityPrice}
-        ,#{courseOriginalPrice},#{coursePublicTime},#{courseIntroduce},#{courseCatalog},#{courseVideoUrl},#{introduce})
+        insert into course values (#{courseId},#{courseTitle},#{courseSubTitle},#{courseImage},#{courseImageKey},#{courseTeacher}
+        ,#{courseTeacherImage},#{courseTeacherImageKey},#{courseTeacherIntroduce},#{courseWatchCount},#{coursePreferentialTime},#{courseActivityPrice}
+        ,#{courseOriginalPrice},#{coursePublicTime},#{courseUpdateTime},#{courseIntroduce},#{courseCatalog},#{courseVideoUrl},#{courseVideoUrlKey}
+        ,#{introduce})
     </insert>
 
     <update id="updateCourse" parameterType="com.sxx.framework.domain.course.Course">

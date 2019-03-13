@@ -1,5 +1,6 @@
 package com.sxx.manage_media.service;
 
+import com.amazonaws.services.s3.model.PutObjectResult;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.netflix.discovery.converters.Auto;
@@ -9,23 +10,27 @@ import com.sxx.framework.domain.course.dto.CourseListDTO;
 import com.sxx.framework.domain.course.ext.TeachplanNode;
 import com.sxx.framework.domain.course.response.CourseListDTOResult;
 import com.sxx.framework.domain.course.response.CourseResult;
+import com.sxx.framework.domain.course.vo.CourseVO;
 import com.sxx.framework.exception.ExceptionCast;
+import com.sxx.framework.model.aws.AwsS3Bucket;
 import com.sxx.framework.model.response.CommonCode;
 import com.sxx.framework.model.response.ResponseResult;
 import com.sxx.manage_media.mapper.CourseManageMapper;
 import com.sxx.manage_media.mapper.CourseRepository;
 import com.sxx.manage_media.mapper.TeachplanRepository;
+import com.sxx.utils.AWSS3Util;
+import com.sxx.utils.FileUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * 〈一句话功能简述〉<br>
@@ -71,14 +76,35 @@ public class CourseManageService {
     /**
      * 添加课程
      *
-     * @param course 课程信息
+     * @param courseVO 课程信息
      * @return 结果
      */
     @Transactional
-    public ResponseResult addCourse(Course course) {
-        if (course == null ||
-                StringUtils.isEmpty(course.getCourseTitle())) {
+    public ResponseResult addCourse(CourseVO courseVO) {
+        if (courseVO == null ||
+                StringUtils.isEmpty(courseVO.getCourseTitle()) ||
+                StringUtils.isEmpty(courseVO.getCourseSubTitle())) {
             return new ResponseResult(CommonCode.INVALID_PARAM);
+        }
+        Course course = new Course();
+        BeanUtils.copyProperties(courseVO, course);
+        // 判断是否上传封面图片
+        MultipartFile courseImage = courseVO.getCourseImage();
+        if (courseImage != null) {
+            try {
+                // 获得存储key
+                String key = FileUtil.getSaveKey(Objects.requireNonNull(courseImage.getOriginalFilename()));
+                // 保存key
+                course.setCourseImageKey(key);
+                // 上传封面图片
+                PutObjectResult putObjectResult = AWSS3Util.uploadPublicFile(AwsS3Bucket.SXX_Course_BUCKET, key, courseImage);
+                // 保存图片url
+                String courseImageUrl = FileUtil.getFilePublicUrl(AwsS3Bucket.SXX_Course_BUCKET, key);
+                course.setCourseImage(courseImageUrl);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
         // 设置时间
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -119,13 +145,13 @@ public class CourseManageService {
         // 获取父节点id
         String parentId = teachplan.getParentId();
         // 如果父节点id为空
-        if (StringUtils.isEmpty(parentId)){
+        if (StringUtils.isEmpty(parentId)) {
             // 根据课程id获取根节点
             parentId = getTeachplanRoot(courseId);
         }
         // 获得父节点信息
         Optional<Teachplan> optional = teachplanRepository.findById(parentId);
-        if (!optional.isPresent()){
+        if (!optional.isPresent()) {
             ExceptionCast.cast(CommonCode.INVALID_PARAM);
         }
         Teachplan teachplanNode = optional.get();
@@ -135,10 +161,10 @@ public class CourseManageService {
         Teachplan teachplanNew = new Teachplan();
         teachplanNew.setCourseId(courseId);
         teachplanNew.setParentId(parentId);
-        BeanUtils.copyProperties(teachplan,teachplanNew);
-        if ("1".equals(grade)){
+        BeanUtils.copyProperties(teachplan, teachplanNew);
+        if ("1".equals(grade)) {
             teachplanNew.setGrade("2");
-        }else {
+        } else {
             teachplanNew.setGrade("3");
         }
         teachplanRepository.save(teachplanNew);
@@ -149,7 +175,7 @@ public class CourseManageService {
     private String getTeachplanRoot(String courseId) {
         // 根据课程id查询课程基本信息
         Optional<Course> optional = courseRepository.findById(courseId);
-        if (!optional.isPresent()){
+        if (!optional.isPresent()) {
             ExceptionCast.cast(CommonCode.INVALID_PARAM);
             return null;
         }
@@ -157,7 +183,7 @@ public class CourseManageService {
         Course course = optional.get();
         List<Teachplan> teachplanList = teachplanRepository.findByCourseIdAndParentId(courseId, "0");
         // 判断是不是新课程
-        if (teachplanList == null || teachplanList.size() <=0){
+        if (teachplanList == null || teachplanList.size() <= 0) {
             // 创建一个新的课程计划
             Teachplan teachplan = new Teachplan();
             teachplan.setCourseId(courseId);
@@ -175,14 +201,124 @@ public class CourseManageService {
     /**
      * 修改更新课程信息
      *
-     * @param course 原课程信息
+     * @param courseVO 修改的课程信息
      * @return 结果
      */
-    public ResponseResult updateCourse(Course course) {
+    @Transactional
+    public ResponseResult updateCourse(CourseVO courseVO) {
+        // 获得课程id,查询课程基本信息
+        String courseId = courseVO.getCourseId();
+        Optional<Course> optional = courseRepository.findById(courseId);
+        if (!optional.isPresent()) {
+            ExceptionCast.cast(CommonCode.INVALID_PARAM);
+            return null;
+        }
+        Course course = optional.get();
+        // 将需要更新内容覆盖到原内容
+        BeanUtils.copyProperties(courseVO, course);
+        try {
+            // 判断课程图片是否需要更新
+            MultipartFile courseImage = courseVO.getCourseImage();
+            if (courseImage != null) {
+                boolean flag = this.isUpdate(AwsS3Bucket.SXX_Course_BUCKET, course.getCourseImageKey(), courseImage);
+                if (flag) {
+                    // 需要更新
+                    // 获得存储key
+                    String saveKey = FileUtil.getSaveKey(Objects.requireNonNull(courseImage.getOriginalFilename()));
+                    // 上传新文件
+                    AWSS3Util.uploadPublicFile(AwsS3Bucket.SXX_Course_BUCKET, saveKey, courseImage);
+                    // 更新成功,保存key和url
+                    course.setCourseImageKey(saveKey);
+                    // 保存图片url
+                    String filePublicUrl = FileUtil.getFilePublicUrl(AwsS3Bucket.SXX_Course_BUCKET, saveKey);
+                    course.setCourseImage(filePublicUrl);
+                }
+            }
+            // 判断讲师图片是否需要更新
+            MultipartFile courseTeacherImage = courseVO.getCourseTeacherImage();
+            if (courseTeacherImage != null) {
+                boolean teaFlag = this.isUpdate(AwsS3Bucket.SXX_Course_BUCKET, course.getCourseImageKey(), courseTeacherImage);
+                if (teaFlag) {
+                    // 需要更新
+                    // 获得存储key
+                    String saveKey = FileUtil.getSaveKey(Objects.requireNonNull(courseTeacherImage.getOriginalFilename()));
+                    // 上传新文件
+                    AWSS3Util.uploadPublicFile(AwsS3Bucket.SXX_Course_BUCKET, saveKey, courseTeacherImage);
+                    // 更新成功,保存key和url
+                    course.setCourseTeacherImageKey(saveKey);
+                    // 保存图片url
+                    String filePublicUrl = FileUtil.getFilePublicUrl(AwsS3Bucket.SXX_Course_BUCKET, saveKey);
+                    course.setCourseTeacherImage(filePublicUrl);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // 设置更新时间
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String courseUpdateTime = simpleDateFormat.format(new Date());
         course.setCourseUpdateTime(courseUpdateTime);
         courseManageMapper.updateCourse(course);
         return new ResponseResult(CommonCode.SUCCESS);
     }
+
+    /**
+     * 删除课程信息
+     *
+     * @param courseId 课程id
+     * @return 结果
+     */
+    @Transactional
+    public ResponseResult deleteCourse(String courseId) {
+        if (StringUtils.isEmpty(courseId)){
+            ExceptionCast.cast(CommonCode.INVALID_PARAM);
+            return null;
+        }
+        // 根据课程id查询课程信息
+        Optional<Course> optional = courseRepository.findById(courseId);
+        Course course = optional.get();
+        String courseImageKey = course.getCourseImageKey();
+        // 删除课程图片
+        if (StringUtils.isNotEmpty(courseImageKey)){
+            AWSS3Util.deleteFile(AwsS3Bucket.SXX_Course_BUCKET,courseImageKey);
+        }
+        // 删除授课导师图片
+        String courseTeacherImageKey = course.getCourseTeacherImageKey();
+        if (StringUtils.isNotEmpty(courseTeacherImageKey)){
+            AWSS3Util.deleteFile(AwsS3Bucket.SXX_Course_BUCKET,courseTeacherImageKey);
+        }
+        // 删除视频
+        String courseVideoUrlKey = course.getCourseVideoUrlKey();
+        if (StringUtils.isNotEmpty(courseVideoUrlKey)){
+            AWSS3Util.deleteFile(AwsS3Bucket.SXX_Course_BUCKET,courseVideoUrlKey);
+        }
+        // 删除数据库记录
+        courseRepository.deleteById(courseId);
+        return new ResponseResult(CommonCode.SUCCESS);
+    }
+
+    /**
+     * 判断文件是否需要更新,如果是则删除源文件
+     *
+     * @param bucket        储存桶名称
+     * @param key           储存key
+     * @param multipartFile 文件
+     * @return 结果
+     * @throws IOException IO异常
+     */
+    private boolean isUpdate(String bucket, String key, MultipartFile multipartFile) throws IOException {
+        String originalFilename = multipartFile.getOriginalFilename();
+        if (key.equals(originalFilename)) {
+            // 图片没更新
+            return false;
+        }
+        // 删除原来数据
+        boolean b = AWSS3Util.deleteFile(bucket, key);
+        if (!b) {
+            ExceptionCast.cast(CommonCode.INVALID_PARAM);
+        }
+        return true;
+    }
+
+
 }

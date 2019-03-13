@@ -1,10 +1,5 @@
 server:
   port: 31400
-  ssl:
-    key-store: classpath:sxx.pfx
-    key-store-password: tK75MMVp
-    key-store-type: PKCS12
-    key-alias: alias
 spring:
   application:
     name: sxx-service-manage-media

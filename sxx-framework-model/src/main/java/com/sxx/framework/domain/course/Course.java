@@ -34,10 +34,14 @@ public class Course implements Serializable {
     private String courseSubTitle;
     @ApiModelProperty("课程封面图片")
     private String courseImage;
+    @ApiModelProperty("课程封面图片存储key")
+    private String courseImageKey;
     @ApiModelProperty("课程授课老师")
     private String courseTeacher;
     @ApiModelProperty("课程授课老师图片")
     private String courseTeacherImage;
+    @ApiModelProperty("课程授课老师图片存储key")
+    private String courseTeacherImageKey;
     @ApiModelProperty("课程授课老师介绍")
     private String courseTeacherIntroduce;
     @ApiModelProperty("课程观看次数")
@@ -58,6 +62,8 @@ public class Course implements Serializable {
     private String courseCatalog;
     @ApiModelProperty("课程视频连接")
     private String courseVideoUrl;
+    @ApiModelProperty("课程视频存储key")
+    private String courseVideoUrlKey;
     @ApiModelProperty("介绍")
     private String introduce;
 }

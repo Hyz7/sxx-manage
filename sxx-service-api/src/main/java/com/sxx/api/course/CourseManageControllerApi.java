@@ -9,11 +9,11 @@
 package com.sxx.api.course;
 
 
-import com.sxx.framework.domain.course.Course;
 import com.sxx.framework.domain.course.Teachplan;
 import com.sxx.framework.domain.course.ext.TeachplanNode;
 import com.sxx.framework.domain.course.response.CourseListDTOResult;
 import com.sxx.framework.domain.course.response.CourseResult;
+import com.sxx.framework.domain.course.vo.CourseVO;
 import com.sxx.framework.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -40,20 +40,29 @@ public interface CourseManageControllerApi {
     /**
      * 添加课程
      *
-     * @param course 课程信息
+     * @param courseVO 课程信息
      * @return 结果
      */
     @ApiOperation("添加课程信息")
-    ResponseResult addCourse(Course course);
+    ResponseResult addCourse(CourseVO courseVO);
 
     /**
      * 修改更新课程信息
      *
-     * @param course 原课程信息
+     * @param courseVO 修改的课程信息
      * @return 结果
      */
     @ApiOperation("修改更新课程信息")
-    ResponseResult updateCourse(Course course);
+    ResponseResult updateCourse(CourseVO courseVO);
+
+    /**
+     * 删除课程信息
+     *
+     * @param courseId 课程id
+     * @return 结果
+     */
+    @ApiOperation("删除课程信息")
+    ResponseResult deleteCourse(String courseId);
 
     /**
      * 查询课程计划页面列表

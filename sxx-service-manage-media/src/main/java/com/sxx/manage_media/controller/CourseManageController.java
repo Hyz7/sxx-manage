@@ -1,11 +1,11 @@
 package com.sxx.manage_media.controller;
 
 import com.sxx.api.course.CourseManageControllerApi;
-import com.sxx.framework.domain.course.Course;
 import com.sxx.framework.domain.course.Teachplan;
 import com.sxx.framework.domain.course.ext.TeachplanNode;
 import com.sxx.framework.domain.course.response.CourseListDTOResult;
 import com.sxx.framework.domain.course.response.CourseResult;
+import com.sxx.framework.domain.course.vo.CourseVO;
 import com.sxx.framework.model.response.ResponseResult;
 import com.sxx.manage_media.service.CourseManageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +34,9 @@ public class CourseManageController implements CourseManageControllerApi {
     @Override
     @GetMapping("/queryCourseList")
     public CourseListDTOResult queryCourseList(String courseTitle,
-                                               @RequestParam(value = "page", defaultValue = "1")Integer page,
-                                               @RequestParam(value = "size", defaultValue = "20")Integer size) {
-        return courseManageService.queryCourseList(courseTitle,page,size);
+                                               @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                               @RequestParam(value = "size", defaultValue = "20") Integer size) {
+        return courseManageService.queryCourseList(courseTitle, page, size);
     }
 
     /**
@@ -54,25 +54,37 @@ public class CourseManageController implements CourseManageControllerApi {
     /**
      * 添加课程
      *
-     * @param course 课程信息
+     * @param courseVO 课程信息
      * @return 结果
      */
     @Override
     @PostMapping("/addCourse")
-    public ResponseResult addCourse(@RequestBody Course course) {
-        return courseManageService.addCourse(course);
+    public ResponseResult addCourse(@ModelAttribute CourseVO courseVO) {
+        return courseManageService.addCourse(courseVO);
     }
 
     /**
      * 修改更新课程信息
      *
-     * @param course 原课程信息
+     * @param courseVO 修改的课程信息
      * @return 结果
      */
     @Override
     @PostMapping("/updateCourse")
-    public ResponseResult updateCourse(@RequestBody Course course) {
-        return courseManageService.updateCourse(course);
+    public ResponseResult updateCourse(@ModelAttribute CourseVO courseVO) {
+        return courseManageService.updateCourse(courseVO);
+    }
+
+    /**
+     * 删除课程信息
+     *
+     * @param courseId 课程id
+     * @return 结果
+     */
+    @Override
+    @DeleteMapping("/deleteCourse")
+    public ResponseResult deleteCourse(@RequestParam("courseId") String courseId) {
+        return courseManageService.deleteCourse(courseId);
     }
 
     /**

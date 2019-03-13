@@ -2,6 +2,7 @@ package com.sxx.api.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
@@ -13,9 +14,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @since 1.0.0
  */
 @Configuration
+@EnableWebMvc
 public class CorsConfiguration extends WebMvcConfigurerAdapter {
+    private static final String[] ORIGINS = new String[] { "GET", "POST", "PUT", "DELETE" };
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**").allowedMethods("*").allowedOrigins("*").allowedHeaders("*");
+        registry.addMapping("/**").allowedMethods("*").allowedOrigins(ORIGINS).allowedHeaders("*").allowCredentials(true);
     }
 }

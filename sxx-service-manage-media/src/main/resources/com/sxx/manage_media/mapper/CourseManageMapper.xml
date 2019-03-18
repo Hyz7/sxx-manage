@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.sxx.manage_media.mapper.CourseManageMapper">
 
-    <select id="queryList" parameterType="java.lang.String" resultType="com.sxx.framework.domain.course.dto.CourseListDTO">
-        select c.course_id,c.course_title,c.course_sub_title,c.course_image,c.course_activity_price,c.course_original_price
+    <select id="queryList" parameterType="java.lang.String" resultType="com.sxx.framework.domain.course.Course">
+        select *
         from course c
         <if test="courseTitle != null and courseTitle != '' and courseTitle != 'undefined'">
           where
@@ -56,8 +56,7 @@
         </selectKey>
         insert into course values (#{courseId},#{courseTitle},#{courseSubTitle},#{courseImage},#{courseImageKey},#{courseTeacher}
         ,#{courseTeacherImage},#{courseTeacherImageKey},#{courseTeacherIntroduce},#{courseWatchCount},#{coursePreferentialTime},#{courseActivityPrice}
-        ,#{courseOriginalPrice},#{coursePublicTime},#{courseUpdateTime},#{courseIntroduce},#{courseCatalog},#{courseVideoUrl},#{courseVideoUrlKey}
-        ,#{introduce})
+        ,#{courseOriginalPrice},#{coursePublicTime},#{courseUpdateTime},#{courseIntroduce},#{introduce})
     </insert>
 
     <update id="updateCourse" parameterType="com.sxx.framework.domain.course.Course">
@@ -73,9 +72,8 @@
             <if test="coursePreferentialTime!=null">course_preferential_time=#{coursePreferentialTime},</if>
             <if test="courseActivityPrice!=null">course_activity_price=#{courseActivityPrice},</if>
             <if test="courseOriginalPrice!=null">course_original_price=#{courseOriginalPrice},</if>
+            <if test="courseUpdateTime!=null">course_update_time=#{courseUpdateTime},</if>
             <if test="courseIntroduce!=null">course_introduce=#{courseIntroduce},</if>
-            <if test="courseCatalog!=null">course_catalog=#{courseCatalog},</if>
-            <if test="courseVideoUrl!=null">course_video_url=#{courseVideoUrl},</if>
             <if test="introduce!=null">introduce=#{introduce},</if>
         </trim>
         WHERE course_id=#{courseId}

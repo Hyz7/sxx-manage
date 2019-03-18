@@ -3,7 +3,7 @@ package com.sxx.manage_media.controller;
 import com.sxx.api.course.CourseManageControllerApi;
 import com.sxx.framework.domain.course.Teachplan;
 import com.sxx.framework.domain.course.ext.TeachplanNode;
-import com.sxx.framework.domain.course.response.CourseListDTOResult;
+import com.sxx.framework.domain.course.response.CourseListResult;
 import com.sxx.framework.domain.course.response.CourseResult;
 import com.sxx.framework.domain.course.vo.CourseVO;
 import com.sxx.framework.model.response.ResponseResult;
@@ -33,9 +33,9 @@ public class CourseManageController implements CourseManageControllerApi {
      */
     @Override
     @GetMapping("/queryCourseList")
-    public CourseListDTOResult queryCourseList(String courseTitle,
-                                               @RequestParam(value = "page", defaultValue = "1") Integer page,
-                                               @RequestParam(value = "size", defaultValue = "20") Integer size) {
+    public CourseListResult queryCourseList(String courseTitle,
+                                            @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                            @RequestParam(value = "size", defaultValue = "20") Integer size) {
         return courseManageService.queryCourseList(courseTitle, page, size);
     }
 

@@ -11,7 +11,7 @@ package com.sxx.api.course;
 
 import com.sxx.framework.domain.course.Teachplan;
 import com.sxx.framework.domain.course.ext.TeachplanNode;
-import com.sxx.framework.domain.course.response.CourseListDTOResult;
+import com.sxx.framework.domain.course.response.CourseListResult;
 import com.sxx.framework.domain.course.response.CourseResult;
 import com.sxx.framework.domain.course.vo.CourseVO;
 import com.sxx.framework.model.response.ResponseResult;
@@ -27,7 +27,7 @@ public interface CourseManageControllerApi {
      * @return 课程信息列表
      */
     @ApiOperation("根据课程标题分页模糊查询课程信息列表")
-    CourseListDTOResult queryCourseList(String courseTitle, Integer page, Integer size);
+    CourseListResult queryCourseList(String courseTitle, Integer page, Integer size);
 
     /**
      * 根据id查询课程信息

@@ -58,12 +58,6 @@ public class Course implements Serializable {
     private String courseUpdateTime;
     @ApiModelProperty("课程介绍")
     private String courseIntroduce;
-    @ApiModelProperty("课程目录")
-    private String courseCatalog;
-    @ApiModelProperty("课程视频连接")
-    private String courseVideoUrl;
-    @ApiModelProperty("课程视频存储key")
-    private String courseVideoUrlKey;
     @ApiModelProperty("介绍")
     private String introduce;
 }

@@ -1,14 +1,14 @@
 package com.sxx.manage_media.service;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.netflix.discovery.converters.Auto;
 import com.sxx.framework.domain.course.Course;
 import com.sxx.framework.domain.course.Teachplan;
-import com.sxx.framework.domain.course.dto.CourseListDTO;
 import com.sxx.framework.domain.course.ext.TeachplanNode;
-import com.sxx.framework.domain.course.response.CourseListDTOResult;
+import com.sxx.framework.domain.course.response.CourseListResult;
 import com.sxx.framework.domain.course.response.CourseResult;
 import com.sxx.framework.domain.course.vo.CourseVO;
 import com.sxx.framework.exception.ExceptionCast;
@@ -27,10 +27,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
-import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * 〈一句话功能简述〉<br>
@@ -55,11 +57,10 @@ public class CourseManageService {
      * @param courseTitle 课程标题
      * @return 课程信息列表
      */
-    public CourseListDTOResult queryCourseList(String courseTitle, Integer page, Integer size) {
+    public CourseListResult queryCourseList(String courseTitle, Integer page, Integer size) {
         PageHelper.startPage(page, size);
-        Page<CourseListDTO> courseListDTOS = courseManageMapper.queryList(courseTitle);
-        List<CourseListDTO> courseListDTOSResult = courseListDTOS.getResult();
-        return new CourseListDTOResult(CommonCode.SUCCESS, courseListDTOSResult);
+        Page<Course> courses = courseManageMapper.queryList(courseTitle);
+        return new CourseListResult(CommonCode.SUCCESS, courses.getResult());
     }
 
     /**
@@ -111,7 +112,7 @@ public class CourseManageService {
         String coursePublicTime = simpleDateFormat.format(new Date());
         course.setCoursePublicTime(coursePublicTime);
         // 设置初始观看次数
-        course.setCourseWatchCount((int) (1 + Math.random()) * 100);
+        course.setCourseWatchCount((int) (Math.random() * 1000) + 201);
         courseManageMapper.addCourse(course);
         return new ResponseResult(CommonCode.SUCCESS);
     }
@@ -215,7 +216,7 @@ public class CourseManageService {
         }
         Course course = optional.get();
         // 将需要更新内容覆盖到原内容
-        BeanUtils.copyProperties(courseVO, course);
+        BeanUtil.copyProperties(courseVO,course,true, CopyOptions.create().setIgnoreNullValue(true).setIgnoreError(true));
         try {
             // 判断课程图片是否需要更新
             MultipartFile courseImage = courseVO.getCourseImage();
@@ -286,11 +287,6 @@ public class CourseManageService {
         String courseTeacherImageKey = course.getCourseTeacherImageKey();
         if (StringUtils.isNotEmpty(courseTeacherImageKey)){
             AWSS3Util.deleteFile(AwsS3Bucket.SXX_Course_BUCKET,courseTeacherImageKey);
-        }
-        // 删除视频
-        String courseVideoUrlKey = course.getCourseVideoUrlKey();
-        if (StringUtils.isNotEmpty(courseVideoUrlKey)){
-            AWSS3Util.deleteFile(AwsS3Bucket.SXX_Course_BUCKET,courseVideoUrlKey);
         }
         // 删除数据库记录
         courseRepository.deleteById(courseId);

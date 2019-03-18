@@ -10,7 +10,6 @@ package com.sxx.manage_media.mapper;
 
 import com.github.pagehelper.Page;
 import com.sxx.framework.domain.course.Course;
-import com.sxx.framework.domain.course.dto.CourseListDTO;
 import com.sxx.framework.domain.course.ext.TeachplanNode;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -24,7 +23,7 @@ public interface CourseManageMapper {
      * @param courseTitle 课程标题
      * @return 课程信息列表
      */
-    Page<CourseListDTO> queryList(@Param("courseTitle") String courseTitle);
+    Page<Course> queryList(@Param("courseTitle") String courseTitle);
 
     /**
      * 根据id查询课程信息

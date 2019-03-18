@@ -9,6 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 /**
  * @author Administrator
@@ -17,6 +18,7 @@ import org.springframework.web.filter.CorsFilter;
  **/
 @EnableDiscoveryClient//从Eureka Server获取服务
 @SpringBootApplication//扫描所在包及子包的bean，注入到ioc中
+@EnableWebMvc
 @EntityScan("com.sxx.framework.domain")//扫描实体类
 @ComponentScan(basePackages={"com.sxx.api"})//扫描接口
 @ComponentScan(basePackages={"com.sxx.framework"})//扫描framework中通用类

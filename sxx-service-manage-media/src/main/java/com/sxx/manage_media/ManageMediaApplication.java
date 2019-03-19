@@ -3,6 +3,7 @@ package com.sxx.manage_media;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -19,6 +20,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableDiscoveryClient//从Eureka Server获取服务
 @SpringBootApplication//扫描所在包及子包的bean，注入到ioc中
 @EnableWebMvc
+@EnableCaching
 @EntityScan("com.sxx.framework.domain")//扫描实体类
 @ComponentScan(basePackages={"com.sxx.api"})//扫描接口
 @ComponentScan(basePackages={"com.sxx.framework"})//扫描framework中通用类

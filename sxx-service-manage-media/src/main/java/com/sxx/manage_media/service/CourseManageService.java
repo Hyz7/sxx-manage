@@ -19,16 +19,20 @@ import com.sxx.manage_media.mapper.CourseManageMapper;
 import com.sxx.manage_media.mapper.CourseRepository;
 import com.sxx.manage_media.mapper.TeachplanRepository;
 import com.sxx.utils.AWSS3Util;
+import com.sxx.utils.DateUtil;
 import com.sxx.utils.FileUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -43,6 +47,7 @@ import java.util.Optional;
  * @since 1.0.0
  */
 @Service
+@CacheConfig(cacheNames = {"course"})
 public class CourseManageService {
     @Autowired
     private CourseManageMapper courseManageMapper;
@@ -57,6 +62,7 @@ public class CourseManageService {
      * @param courseTitle 课程标题
      * @return 课程信息列表
      */
+    @Cacheable(key = "targetClass + methodName + #p0",value = "queryCourseList")
     public CourseListResult queryCourseList(String courseTitle, Integer page, Integer size) {
         PageHelper.startPage(page, size);
         Page<Course> courses = courseManageMapper.queryList(courseTitle);
@@ -69,7 +75,9 @@ public class CourseManageService {
      * @param courseId 课程id
      * @return 课程信息结果
      */
+    @Cacheable(key = "#courseId")
     public CourseResult queryCourseInformationByCourseId(String courseId) {
+        System.out.println("从数据库查数据...");
         Course course = courseManageMapper.queryCourseInformationByCourseId(courseId);
         return new CourseResult(CommonCode.SUCCESS, course);
     }
@@ -81,6 +89,10 @@ public class CourseManageService {
      * @return 结果
      */
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "course",allEntries = true),
+            @CacheEvict(value = "queryCourseList",allEntries = true)
+    })
     public ResponseResult addCourse(CourseVO courseVO) {
         if (courseVO == null ||
                 StringUtils.isEmpty(courseVO.getCourseTitle()) ||
@@ -107,12 +119,13 @@ public class CourseManageService {
             }
 
         }
-        // 设置时间
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String coursePublicTime = simpleDateFormat.format(new Date());
+        // 设置发布时间
+        String coursePublicTime = DateUtil.getNowFormateDate();
         course.setCoursePublicTime(coursePublicTime);
         // 设置初始观看次数
         course.setCourseWatchCount((int) (Math.random() * 1000) + 201);
+        // 默认设置课程状态为未发布
+        course.setStatus("0");
         courseManageMapper.addCourse(course);
         return new ResponseResult(CommonCode.SUCCESS);
     }
@@ -123,7 +136,12 @@ public class CourseManageService {
      * @param courseId 课程id
      * @return 结果
      */
+    @Cacheable(key = "targetClass + methodName + #p0",value = "teachplan")
     public TeachplanNode findTeachplanList(String courseId) {
+        if (courseId == null || StringUtils.isEmpty(courseId)){
+            ExceptionCast.cast(CommonCode.INVALID_PARAM);
+            return null;
+        }
         return courseManageMapper.findTeachplanList(courseId);
     }
 
@@ -134,6 +152,7 @@ public class CourseManageService {
      * @return 结果
      */
     @Transactional
+    @CacheEvict(allEntries = true,value = "teachplan")
     public ResponseResult addTeachplan(Teachplan teachplan) {
         // 判断参数合法性
         if (teachplan == null ||
@@ -160,9 +179,9 @@ public class CourseManageService {
         String grade = teachplanNode.getGrade();
         // 创建一个新节点
         Teachplan teachplanNew = new Teachplan();
+        BeanUtils.copyProperties(teachplan, teachplanNew);
         teachplanNew.setCourseId(courseId);
         teachplanNew.setParentId(parentId);
-        BeanUtils.copyProperties(teachplan, teachplanNew);
         if ("1".equals(grade)) {
             teachplanNew.setGrade("2");
         } else {
@@ -206,6 +225,7 @@ public class CourseManageService {
      * @return 结果
      */
     @Transactional
+    @CachePut(key = "#courseVO.courseId")
     public ResponseResult updateCourse(CourseVO courseVO) {
         // 获得课程id,查询课程基本信息
         String courseId = courseVO.getCourseId();
@@ -238,7 +258,7 @@ public class CourseManageService {
             // 判断讲师图片是否需要更新
             MultipartFile courseTeacherImage = courseVO.getCourseTeacherImage();
             if (courseTeacherImage != null) {
-                boolean teaFlag = this.isUpdate(AwsS3Bucket.SXX_Course_BUCKET, course.getCourseImageKey(), courseTeacherImage);
+                boolean teaFlag = this.isUpdate(AwsS3Bucket.SXX_Course_BUCKET, course.getCourseTeacherImageKey(), courseTeacherImage);
                 if (teaFlag) {
                     // 需要更新
                     // 获得存储key
@@ -256,8 +276,7 @@ public class CourseManageService {
             e.printStackTrace();
         }
         // 设置更新时间
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String courseUpdateTime = simpleDateFormat.format(new Date());
+        String courseUpdateTime = DateUtil.getNowFormateDate();
         course.setCourseUpdateTime(courseUpdateTime);
         courseManageMapper.updateCourse(course);
         return new ResponseResult(CommonCode.SUCCESS);
@@ -270,6 +289,7 @@ public class CourseManageService {
      * @return 结果
      */
     @Transactional
+    @CacheEvict(key = "#courseId",beforeInvocation = true)
     public ResponseResult deleteCourse(String courseId) {
         if (StringUtils.isEmpty(courseId)){
             ExceptionCast.cast(CommonCode.INVALID_PARAM);

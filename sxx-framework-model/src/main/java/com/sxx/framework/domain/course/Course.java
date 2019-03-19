@@ -60,4 +60,6 @@ public class Course implements Serializable {
     private String courseIntroduce;
     @ApiModelProperty("介绍")
     private String introduce;
+    @ApiModelProperty("课程是否发布:0表示未发布   1表示已发布")
+    private String status;
 }

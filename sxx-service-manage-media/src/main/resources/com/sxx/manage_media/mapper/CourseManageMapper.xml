@@ -6,22 +6,22 @@
         select *
         from course c
         <if test="courseTitle != null and courseTitle != '' and courseTitle != 'undefined'">
-          where
-          c.course_title LIKE CONCAT(CONCAT('%',#{courseTitle},'%'))
+            where
+            c.course_title LIKE CONCAT(CONCAT('%',#{courseTitle},'%'))
         </if>
         ORDER BY
         c.course_public_time DESC
     </select>
 
     <resultMap id="teachplanMap" type="com.sxx.framework.domain.course.ext.TeachplanNode">
-        <id column="one_id" property="id" />
-        <result column="one_name" property="pName" />
+        <id column="one_id" property="id"/>
+        <result column="one_name" property="pName"/>
         <collection property="children" ofType="com.sxx.framework.domain.course.ext.TeachplanNode">
-            <id column="two_id" property="id" />
-            <result column="two_name" property="pName" />
+            <id column="two_id" property="id"/>
+            <result column="two_name" property="pName"/>
             <collection property="children" ofType="com.sxx.framework.domain.course.ext.TeachplanNode">
-                <id column="three_id" property="id" />
-                <result column="three_name" property="pName" />
+                <id column="three_id" property="id"/>
+                <result column="three_name" property="pName"/>
             </collection>
         </collection>
 
@@ -40,9 +40,7 @@
         LEFT JOIN teachplan c ON b.id = c.parent_id
         WHERE
         a.parent_id = '0'
-        <if test="_parameter!=null and _parameter != ''">
-            AND a.course_id = #{courseId}
-        </if>
+        AND a.course_id = #{courseId}
         ORDER BY
         a.order_by,
         b.order_by,
@@ -54,7 +52,8 @@
         <selectKey keyProperty="courseId" order="BEFORE" resultType="java.lang.String">
             select replace(uuid(),'-','') from dual
         </selectKey>
-        insert into course values (#{courseId},#{courseTitle},#{courseSubTitle},#{courseImage},#{courseImageKey},#{courseTeacher}
+        insert into course values
+        (#{courseId},#{courseTitle},#{courseSubTitle},#{courseImage},#{courseImageKey},#{courseTeacher}
         ,#{courseTeacherImage},#{courseTeacherImageKey},#{courseTeacherIntroduce},#{courseWatchCount},#{coursePreferentialTime},#{courseActivityPrice}
         ,#{courseOriginalPrice},#{coursePublicTime},#{courseUpdateTime},#{courseIntroduce},#{introduce})
     </insert>

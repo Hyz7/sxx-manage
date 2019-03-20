@@ -31,7 +31,7 @@ public class MediaData implements Serializable {
     //文件类型
     private String fileType;
     //文件大小
-    private Long fileSize;
+    private Double fileSize;
     //上传时间
     private String uploadTime;
     /**

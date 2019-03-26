@@ -2,7 +2,7 @@ package com.sxx.manage_media;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.sxx.framework.model.aws.AwsS3Bucket;
 import org.junit.Test;
 
@@ -113,4 +113,10 @@ public class TestFile {
         System.out.println(url.toString());
     }
 
+
+    @Test
+    public void testDateFormatter(){
+        double i = 55692;
+        System.out.println(Math.round(642727196d/1024/1024));
+    }
 }

@@ -13,10 +13,12 @@ import com.sxx.framework.domain.course.Teachplan;
 import com.sxx.framework.domain.course.ext.TeachplanNode;
 import com.sxx.framework.domain.course.response.CourseListResult;
 import com.sxx.framework.domain.course.response.CourseResult;
+import com.sxx.framework.domain.course.vo.CourseNoneImageVO;
 import com.sxx.framework.domain.course.vo.CourseVO;
 import com.sxx.framework.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.web.multipart.MultipartFile;
 
 @Api(value = "后台管理思学行课程管理接口", description = "提供操作思学行课程的增删改查")
 public interface CourseManageControllerApi {
@@ -53,7 +55,18 @@ public interface CourseManageControllerApi {
      * @return 结果
      */
     @ApiOperation("修改更新课程信息")
-    ResponseResult updateCourse(CourseVO courseVO);
+    ResponseResult updateCourse(CourseNoneImageVO courseVO);
+
+    /**
+     * 修改图片
+     *
+     * @param courseId  课程id
+     * @param imageName 图片类型
+     * @param file      图片
+     * @return 响应结果
+     */
+    @ApiOperation("修改课程图片")
+    ResponseResult updateCourseImage(String courseId, String imageName, MultipartFile file);
 
     /**
      * 删除课程信息
@@ -81,4 +94,22 @@ public interface CourseManageControllerApi {
      */
     @ApiOperation("添加课程计划")
     ResponseResult addTeachplan(Teachplan teachplan);
+
+    /**
+     * 更新课程计划信息
+     *
+     * @param teachplan 更新的课程计划信息
+     * @return 结果
+     */
+    @ApiOperation("更新课程计划信息")
+    ResponseResult updateTeachplan(Teachplan teachplan);
+
+    /**
+     * 删除课程计划信息
+     *
+     * @param teachplanId 课程计划id
+     * @return 结果
+     */
+    @ApiOperation("删除课程计划信息")
+    ResponseResult deleteTeachplan(String teachplanId);
 }

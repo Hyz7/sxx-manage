@@ -2,9 +2,9 @@ package com.sxx.framework.domain.media;
 
 import lombok.Data;
 import lombok.ToString;
-import org.springframework.data.annotation.Id;
+import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -17,9 +17,13 @@ import java.io.Serializable;
  */
 @Data
 @ToString
+@Entity
 @Table(name = "media_data")
+@GenericGenerator(name = "jpa-uuid", strategy = "uuid")
 public class MediaData implements Serializable {
     @Id
+    @GeneratedValue(generator = "jpa-uuid")
+    @Column(length = 32)
     //文件id
     private String fileId;
     //文件名称

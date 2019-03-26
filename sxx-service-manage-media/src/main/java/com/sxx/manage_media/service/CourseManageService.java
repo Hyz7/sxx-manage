@@ -127,7 +127,7 @@ public class CourseManageService {
         course.setCourseWatchCount((int) (Math.random() * 1000) + 201);
         // 默认设置课程状态为未发布
         course.setStatus("0");
-        courseManageMapper.addCourse(course);
+        courseRepository.save(course);
         return new ResponseResult(CommonCode.SUCCESS);
     }
 
@@ -319,7 +319,10 @@ public class CourseManageService {
      * @return 结果
      */
     @Transactional(rollbackOn = Exception.class)
-    @CacheEvict(key = "#courseId", beforeInvocation = true)
+    @Caching(evict = {
+            @CacheEvict(allEntries = true, value = "queryCourseList"),
+            @CacheEvict(key = "#courseId", beforeInvocation = true)
+    })
     public ResponseResult deleteCourse(String courseId) {
         if (StringUtils.isEmpty(courseId)) {
             ExceptionCast.cast(CommonCode.INVALID_PARAM);
@@ -353,7 +356,7 @@ public class CourseManageService {
      */
     private boolean isUpdate(String bucket, String key, MultipartFile multipartFile) {
         // 先判断是否原来已经传了图片，如果没有就直接返回
-        if (key == null || StringUtils.isEmpty(key)){
+        if (key == null || StringUtils.isEmpty(key)) {
             return true;
         }
         String originalFilename = multipartFile.getOriginalFilename();

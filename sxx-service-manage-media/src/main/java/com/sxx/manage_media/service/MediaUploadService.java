@@ -16,6 +16,7 @@ import com.sxx.manage_media.mapper.MediaDataRepository;
 import com.sxx.manage_media.mapper.TeachplanMediaRepository;
 import com.sxx.utils.AWSS3Util;
 import com.sxx.utils.FileUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,6 +53,11 @@ public class MediaUploadService {
      */
     @Transactional(rollbackOn = Exception.class)
     public ResponseResult uploadMedia(String courseId, String teachplanId, MultipartFile file) {
+        if (StringUtils.isEmpty(courseId) ||
+            StringUtils.isEmpty(teachplanId)){
+            ExceptionCast.cast(CommonCode.INVALID_PARAM);
+            return null;
+        }
         // 判断是否该课程计划已经有文件上传,如果有文件上传则先删除文件并删除media_data表中数据
         isUpload(teachplanId);
         // 创建中间表实体
@@ -117,21 +123,21 @@ public class MediaUploadService {
      */
     private boolean isUpload(String teachplanId) {
         Optional<TeachplanMedia> optional = teachplanMediaRepository.findById(teachplanId);
-        if (!optional.isPresent()){
+        if (!optional.isPresent()) {
             return false;
         }
         // 已存在课程,删除课程
         TeachplanMedia teachplanMedia = optional.get();
         String mediaId = teachplanMedia.getMediaId();
         Optional<MediaData> mediaDataOptional = mediaDataRepository.findById(mediaId);
-        if (!mediaDataOptional.isPresent()){
+        if (!mediaDataOptional.isPresent()) {
             ExceptionCast.cast(CommonCode.INVALID_PARAM);
             return false;
         }
         MediaData mediaData = mediaDataOptional.get();
         // 获得文件key
         String fileName = mediaData.getFileName();
-        AWSS3Util.deleteFile(AwsS3Bucket.SXX_Media_BUCKET,fileName);
+        AWSS3Util.deleteFile(AwsS3Bucket.SXX_Media_BUCKET, fileName);
         // 删除表中信息
         teachplanMediaRepository.deleteById(teachplanId);
         mediaDataRepository.deleteById(mediaData.getFileId());

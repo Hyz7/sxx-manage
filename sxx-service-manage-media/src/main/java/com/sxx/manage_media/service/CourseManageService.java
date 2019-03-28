@@ -343,6 +343,8 @@ public class CourseManageService {
         }
         // 删除数据库记录
         courseRepository.deleteById(courseId);
+        teachplanRepository.deleteByCourseId(courseId);
+        teachplanMediaRepository.deleteByCourseId(courseId);
         return new ResponseResult(CommonCode.SUCCESS);
     }
 

@@ -111,9 +111,9 @@ public class CourseManageService {
                 // 保存key
                 course.setCourseImageKey(key);
                 // 上传封面图片
-                PutObjectResult putObjectResult = AWSS3Util.uploadPublicFile(AwsS3Bucket.SXX_Course_BUCKET, key, courseImage);
+                PutObjectResult putObjectResult = AWSS3Util.uploadPublicFile(AwsS3Bucket.SXX_COURSE_BUCKET, key, courseImage);
                 // 保存图片url
-                String courseImageUrl = FileUtil.getFilePublicUrl(AwsS3Bucket.SXX_Course_BUCKET, key);
+                String courseImageUrl = FileUtil.getFilePublicUrl(AwsS3Bucket.SXX_COURSE_BUCKET, key);
                 course.setCourseImage(courseImageUrl);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -274,32 +274,32 @@ public class CourseManageService {
             if (imageName.equals(courseImageName)) {
                 // 课程封面图片
                 // 判断文件是否需要更新，需要则删除旧文件数据
-                boolean flag = this.isUpdate(AwsS3Bucket.SXX_Course_BUCKET, course.getCourseImageKey(), file);
+                boolean flag = this.isUpdate(AwsS3Bucket.SXX_COURSE_BUCKET, course.getCourseImageKey(), file);
                 if (flag) {
                     // 需要更新
                     // 获得存储key
                     String saveKey = FileUtil.getSaveKey(Objects.requireNonNull(file.getOriginalFilename()));
                     // 上传新文件
-                    AWSS3Util.uploadPublicFile(AwsS3Bucket.SXX_Course_BUCKET, saveKey, file);
+                    AWSS3Util.uploadPublicFile(AwsS3Bucket.SXX_COURSE_BUCKET, saveKey, file);
                     // 更新成功,保存key和url
                     course.setCourseImageKey(saveKey);
                     // 保存图片url
-                    String filePublicUrl = FileUtil.getFilePublicUrl(AwsS3Bucket.SXX_Course_BUCKET, saveKey);
+                    String filePublicUrl = FileUtil.getFilePublicUrl(AwsS3Bucket.SXX_COURSE_BUCKET, saveKey);
                     course.setCourseImage(filePublicUrl);
                 }
             } else {
                 // 课程教师图片
-                boolean flag = this.isUpdate(AwsS3Bucket.SXX_Course_BUCKET, course.getCourseTeacherImageKey(), file);
+                boolean flag = this.isUpdate(AwsS3Bucket.SXX_COURSE_BUCKET, course.getCourseTeacherImageKey(), file);
                 if (flag) {
                     // 需要更新
                     // 获得存储key
                     String saveKey = FileUtil.getSaveKey(Objects.requireNonNull(file.getOriginalFilename()));
                     // 上传新文件
-                    AWSS3Util.uploadPublicFile(AwsS3Bucket.SXX_Course_BUCKET, saveKey, file);
+                    AWSS3Util.uploadPublicFile(AwsS3Bucket.SXX_COURSE_BUCKET, saveKey, file);
                     // 更新成功,保存key和url
                     course.setCourseTeacherImageKey(saveKey);
                     // 保存图片url
-                    String filePublicUrl = FileUtil.getFilePublicUrl(AwsS3Bucket.SXX_Course_BUCKET, saveKey);
+                    String filePublicUrl = FileUtil.getFilePublicUrl(AwsS3Bucket.SXX_COURSE_BUCKET, saveKey);
                     course.setCourseTeacherImage(filePublicUrl);
                 }
             }
@@ -334,12 +334,12 @@ public class CourseManageService {
         String courseImageKey = course.getCourseImageKey();
         // 删除课程图片
         if (StringUtils.isNotEmpty(courseImageKey)) {
-            AWSS3Util.deleteFile(AwsS3Bucket.SXX_Course_BUCKET, courseImageKey);
+            AWSS3Util.deleteFile(AwsS3Bucket.SXX_COURSE_BUCKET, courseImageKey);
         }
         // 删除授课导师图片
         String courseTeacherImageKey = course.getCourseTeacherImageKey();
         if (StringUtils.isNotEmpty(courseTeacherImageKey)) {
-            AWSS3Util.deleteFile(AwsS3Bucket.SXX_Course_BUCKET, courseTeacherImageKey);
+            AWSS3Util.deleteFile(AwsS3Bucket.SXX_COURSE_BUCKET, courseTeacherImageKey);
         }
         // 删除数据库记录
         courseRepository.deleteById(courseId);
@@ -431,7 +431,7 @@ public class CourseManageService {
         // 删除信息
         mediaDataRepository.deleteById(mediaId);
         // 删除aws s3文件信息
-        AWSS3Util.deleteFile(AwsS3Bucket.SXX_Media_BUCKET, fileName);
+        AWSS3Util.deleteFile(AwsS3Bucket.SXX_MEDIA_BUCKET, fileName);
         return new ResponseResult(CommonCode.SUCCESS);
     }
 

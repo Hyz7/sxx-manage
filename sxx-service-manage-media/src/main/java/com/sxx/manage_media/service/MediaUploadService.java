@@ -91,12 +91,12 @@ public class MediaUploadService {
             objectMetadata.setContentType(file.getContentType());
             objectMetadata.setContentLength(file.getSize());
             putObjectResult = s3.putObject(
-                    new PutObjectRequest(AwsS3Bucket.SXX_Media_BUCKET, fileName, file.getInputStream(), objectMetadata)
+                    new PutObjectRequest(AwsS3Bucket.SXX_MEDIA_BUCKET, fileName, file.getInputStream(), objectMetadata)
                             .withCannedAcl(CannedAccessControlList.PublicRead));// 设置文件权限为公开只读
             // 设置文件eTag
             mediaData.setTag(putObjectResult.getETag());
             // 设置文件URL
-            String filePublicUrl = FileUtil.getFilePublicUrl(AwsS3Bucket.SXX_Media_BUCKET, fileName);
+            String filePublicUrl = FileUtil.getFilePublicUrl(AwsS3Bucket.SXX_MEDIA_BUCKET, fileName);
             mediaData.setFileUrl(filePublicUrl);
             teachplanMedia.setMediaUrl(filePublicUrl);
             // 成功
@@ -137,7 +137,7 @@ public class MediaUploadService {
         MediaData mediaData = mediaDataOptional.get();
         // 获得文件key
         String fileName = mediaData.getFileName();
-        AWSS3Util.deleteFile(AwsS3Bucket.SXX_Media_BUCKET, fileName);
+        AWSS3Util.deleteFile(AwsS3Bucket.SXX_MEDIA_BUCKET, fileName);
         // 删除表中信息
         teachplanMediaRepository.deleteById(teachplanId);
         mediaDataRepository.deleteById(mediaData.getFileId());

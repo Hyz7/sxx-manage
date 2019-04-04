@@ -10,6 +10,7 @@ package com.sxx.framework.model.aws;
  */
 public class AwsS3Bucket {
     public static final String BAI_PI_SHU_BUCKET = "bucket1545820957450";
-    public static final String SXX_Media_BUCKET = "sxx-media";
-    public static final String SXX_Course_BUCKET = "sxx-course";
+    public static final String SXX_MEDIA_BUCKET = "sxx-media";
+    public static final String SXX_COURSE_BUCKET = "sxx-course";
+    public static final String SXX_BANNER_BUCKET = "sxx-banner";
 }

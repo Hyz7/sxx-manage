@@ -68,6 +68,16 @@ public class BannerManageService {
         banner.setBannerDesc(bannerDesc);
         banner.setOrderBy(orderBy);
         banner.setStatus(status);
+        banner.setForwardUrl("#");
+        try {
+            // 添加图片
+            String bannerImageKey = FileUtil.getSaveKey(Objects.requireNonNull(file.getOriginalFilename()));
+            String filePublicUrl = AWSS3Util.uploadPublicFileAndGetFilePublicUrl(AwsS3Bucket.SXX_BANNER_BUCKET, bannerImageKey, file);
+            banner.setBannerImageKey(bannerImageKey);
+            banner.setBannerImage(filePublicUrl);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         // 设置更新时间
         banner.setUpdateTime(DateUtil.getNowFormateDate());
         bannerManageRepository.save(banner);
@@ -90,7 +100,7 @@ public class BannerManageService {
         }
         Banner banner = optional.get();
         // 判断是否有图片
-        if (StringUtils.isNotEmpty(banner.getBannerImage())) {
+        if (StringUtils.isNotEmpty(banner.getBannerImageKey())) {
             // 删除图片
             AWSS3Util.deleteFile(AwsS3Bucket.SXX_BANNER_BUCKET, banner.getBannerImageKey());
         }
@@ -137,15 +147,14 @@ public class BannerManageService {
         }
         Banner banner = optional.get();
         // 判断是否已有图片
-        if (StringUtils.isNotEmpty(banner.getBannerImage())) {
+        if (StringUtils.isNotEmpty(banner.getBannerImageKey())) {
             // 删除图片
             AWSS3Util.deleteFile(AwsS3Bucket.SXX_BANNER_BUCKET, banner.getBannerImageKey());
         }
         // 上传图片
         try {
             String bannerImageKey = FileUtil.getSaveKey(Objects.requireNonNull(file.getOriginalFilename()));
-            AWSS3Util.uploadPublicFile(AwsS3Bucket.SXX_BANNER_BUCKET, bannerImageKey, file);
-            String filePublicUrl = FileUtil.getFilePublicUrl(AwsS3Bucket.SXX_BANNER_BUCKET, bannerImageKey);
+            String filePublicUrl = AWSS3Util.uploadPublicFileAndGetFilePublicUrl(AwsS3Bucket.SXX_BANNER_BUCKET, bannerImageKey, file);
             banner.setBannerImage(filePublicUrl);
             banner.setBannerImageKey(bannerImageKey);
         } catch (IOException e) {

@@ -8,6 +8,7 @@ import com.sxx.framework.domain.dynamic.response.DynamicTypeResponse;
 import com.sxx.framework.model.response.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 〈一句话功能简述〉<br>
@@ -85,5 +86,12 @@ public interface DynamicControllerApi {
     @ApiOperation("根据分类id分页模糊查询动态信息")
     DynamicListResult2 showNewsListByTypeId(String name, Long typeId, Integer page, Integer size);
 
-
+    /**
+     * 添加思学行动态展示图片
+     *
+     * @param id   id
+     * @param file 图片
+     * @return 结果
+     */
+    ResponseResult addDynamicImage(Long id, MultipartFile file);
 }

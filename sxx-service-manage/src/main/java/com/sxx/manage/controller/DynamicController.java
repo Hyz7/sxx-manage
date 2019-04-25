@@ -10,6 +10,7 @@ import com.sxx.framework.model.response.ResponseResult;
 import com.sxx.manage.service.DynamicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 〈一句话功能简述〉<br>
@@ -46,8 +47,8 @@ public class DynamicController implements DynamicControllerApi {
     @Override
     @GetMapping("/showNewsInfoList")
     public DynamicListResult showNewsInfoList(String name,
-                                              @RequestParam(value = "page", defaultValue = "1")Integer page,
-                                              @RequestParam(value = "size", defaultValue = "5")Integer size) {
+                                              @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                              @RequestParam(value = "size", defaultValue = "5") Integer size) {
         return dynamicService.showNewsInfoList(name, page, size);
     }
 
@@ -110,11 +111,23 @@ public class DynamicController implements DynamicControllerApi {
      */
     @Override
     @GetMapping("/showNewsListByTypeId")
-    public DynamicListResult2 showNewsListByTypeId(String name,@RequestParam("typeId") Long typeId,
-                                                   @RequestParam(value = "page", defaultValue = "1")Integer page,
-                                                   @RequestParam(value = "size", defaultValue = "5")Integer size) {
+    public DynamicListResult2 showNewsListByTypeId(String name, @RequestParam("typeId") Long typeId,
+                                                   @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                                   @RequestParam(value = "size", defaultValue = "5") Integer size) {
         return dynamicService.showNewsListByTypeId(name, typeId, page, size);
     }
 
+    /**
+     * 添加思学行动态展示图片
+     *
+     * @param id   id
+     * @param file 图片
+     * @return 结果
+     */
+    @Override
+    @PostMapping("/addImage")
+    public ResponseResult addDynamicImage(Long id, MultipartFile file) {
+        return dynamicService.addDynamicImage(id, file);
+    }
 
 }

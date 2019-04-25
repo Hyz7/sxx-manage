@@ -111,10 +111,8 @@ public class CourseManageService {
                 // 保存key
                 course.setCourseImageKey(key);
                 // 上传封面图片
-                PutObjectResult putObjectResult = AWSS3Util.uploadPublicFile(AwsS3Bucket.SXX_COURSE_BUCKET, key, courseImage);
-                // 保存图片url
-                String courseImageUrl = FileUtil.getFilePublicUrl(AwsS3Bucket.SXX_COURSE_BUCKET, key);
-                course.setCourseImage(courseImageUrl);
+                String filePublicUrl = AWSS3Util.uploadPublicFileAndGetFilePublicUrl(AwsS3Bucket.SXX_COURSE_BUCKET, key, courseImage);
+                course.setCourseImage(filePublicUrl);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -280,11 +278,9 @@ public class CourseManageService {
                     // 获得存储key
                     String saveKey = FileUtil.getSaveKey(Objects.requireNonNull(file.getOriginalFilename()));
                     // 上传新文件
-                    AWSS3Util.uploadPublicFile(AwsS3Bucket.SXX_COURSE_BUCKET, saveKey, file);
+                    String filePublicUrl = AWSS3Util.uploadPublicFileAndGetFilePublicUrl(AwsS3Bucket.SXX_COURSE_BUCKET, saveKey, file);
                     // 更新成功,保存key和url
                     course.setCourseImageKey(saveKey);
-                    // 保存图片url
-                    String filePublicUrl = FileUtil.getFilePublicUrl(AwsS3Bucket.SXX_COURSE_BUCKET, saveKey);
                     course.setCourseImage(filePublicUrl);
                 }
             } else {
@@ -295,11 +291,9 @@ public class CourseManageService {
                     // 获得存储key
                     String saveKey = FileUtil.getSaveKey(Objects.requireNonNull(file.getOriginalFilename()));
                     // 上传新文件
-                    AWSS3Util.uploadPublicFile(AwsS3Bucket.SXX_COURSE_BUCKET, saveKey, file);
+                    String filePublicUrl = AWSS3Util.uploadPublicFileAndGetFilePublicUrl(AwsS3Bucket.SXX_COURSE_BUCKET, saveKey, file);
                     // 更新成功,保存key和url
                     course.setCourseTeacherImageKey(saveKey);
-                    // 保存图片url
-                    String filePublicUrl = FileUtil.getFilePublicUrl(AwsS3Bucket.SXX_COURSE_BUCKET, saveKey);
                     course.setCourseTeacherImage(filePublicUrl);
                 }
             }

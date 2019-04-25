@@ -12,8 +12,10 @@ import com.sxx.framework.domain.page.PageResult;
 import com.sxx.framework.model.response.CommonCode;
 import com.sxx.framework.model.response.ResponseResult;
 import com.sxx.manage.mapper.DynamicMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.text.SimpleDateFormat;
@@ -165,4 +167,18 @@ public class DynamicService {
         return new DynamicListResult2(CommonCode.SUCCESS, dynamicList, pageResult);
     }
 
+    /**
+     * 添加思学行动态展示图片
+     *
+     * @param id   id
+     * @param file 图片
+     * @return 结果
+     */
+    public ResponseResult addDynamicImage(Long id, MultipartFile file) {
+        Dynamic dynamic = dynamicMapper.query(id);
+        if (StringUtils.isEmpty(dynamic.getImage())){
+
+        }
+        return null;
+    }
 }

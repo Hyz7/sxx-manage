@@ -241,6 +241,13 @@ public class CourseManageService {
         Course course = optional.get();
         // 将需要更新内容覆盖到原内容
         BeanUtil.copyProperties(courseVO, course, true, CopyOptions.create().setIgnoreNullValue(true).setIgnoreError(true));
+        // 修改课程根节点名称
+        if (StringUtils.isNotEmpty(courseVO.getCourseTitle())){
+            List<Teachplan> teachplans = teachplanRepository.findByCourseIdAndParentId(courseVO.getCourseId(), "0");
+            Teachplan teachplan = teachplans.get(0);
+            teachplan.setPName(courseVO.getCourseTitle());
+            teachplanRepository.save(teachplan);
+        }
         // 设置更新时间
         String courseUpdateTime = DateUtil.getNowFormateDate();
         course.setCourseUpdateTime(courseUpdateTime);

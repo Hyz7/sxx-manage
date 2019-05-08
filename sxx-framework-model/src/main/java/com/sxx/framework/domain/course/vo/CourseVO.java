@@ -1,31 +1,21 @@
-package com.sxx.framework.domain.course;
+package com.sxx.framework.domain.course.vo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.ToString;
-import org.hibernate.annotations.GenericGenerator;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.*;
 import java.io.Serializable;
 
 /**
  * 〈一句话功能简述〉<br>
- * 〈培训课程实体类〉
+ * 〈CourseVO接收页面传递参数〉
  *
  * @author hyz
- * @create 2019/3/6 0006
+ * @create 2019/3/11 0011
  * @since 1.0.0
  */
 @Data
-@ToString
-@Entity
-@Table(name = "course")
-@GenericGenerator(name = "jpa-uuid", strategy = "uuid")
-public class Course implements Serializable {
-
-    @Id
-    @GeneratedValue(generator = "jpa-uuid")
-    @Column(length = 32)
+public class CourseVO implements Serializable {
     @ApiModelProperty("课程id")
     private String courseId;
     @ApiModelProperty("课程标题")
@@ -33,15 +23,11 @@ public class Course implements Serializable {
     @ApiModelProperty("课程副标题")
     private String courseSubTitle;
     @ApiModelProperty("课程封面图片")
-    private String courseImage;
-    @ApiModelProperty("课程封面图片存储key")
-    private String courseImageKey;
+    private MultipartFile courseImage;
     @ApiModelProperty("课程授课老师")
     private String courseTeacher;
     @ApiModelProperty("课程授课老师图片")
-    private String courseTeacherImage;
-    @ApiModelProperty("课程授课老师图片存储key")
-    private String courseTeacherImageKey;
+    private MultipartFile courseTeacherImage;
     @ApiModelProperty("课程授课老师介绍")
     private String courseTeacherIntroduce;
     @ApiModelProperty("课程观看次数")

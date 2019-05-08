@@ -123,8 +123,10 @@ public class CourseManageService {
         course.setCoursePublicTime(coursePublicTime);
         // 设置初始观看次数
         course.setCourseWatchCount((int) (Math.random() * 1000) + 201);
-        // 默认设置课程状态为未发布
-        course.setStatus("0");
+        // 默认设置课程状态为发布
+        course.setStatus("1");
+        // 默认设置课程分类为宣讲
+        course.setClassify("1");
         courseRepository.save(course);
         return new ResponseResult(CommonCode.SUCCESS);
     }

@@ -74,6 +74,9 @@
             <if test="courseUpdateTime!=null">course_update_time=#{courseUpdateTime},</if>
             <if test="courseIntroduce!=null">course_introduce=#{courseIntroduce},</if>
             <if test="introduce!=null">introduce=#{introduce},</if>
+            <if test="status!=null">status=#{status},</if>
+            <if test="courseCoverImg!=null">course_cover_img=#{courseCoverImg},</if>
+            <if test="classify!=null">classify=#{classify},</if>
         </trim>
         WHERE course_id=#{courseId}
     </update>

@@ -5,8 +5,8 @@ spring:
     name: sxx-service-manage-media
   servlet:
     multipart:
-      max-file-size: 200MB
-      max-request-size: 200MB
+      max-file-size: 2000MB
+      max-request-size: 2000MB
   datasource:
     url: jdbc:mysql://52.83.149.232:3306/sxx?characterEncoding=utf-8&serverTimezone=GMT%2B8&useSSL=false&allowMultiQueries=true
     username: root
